@@ -1,0 +1,36 @@
+{
+  "common_species": [
+    "Conticribra guillardii",
+    "Cyclostephanos delicatus",
+    "Cyclostephanos dubius",
+    "Cyclostephanos invisitatus",
+    "Cyclotella atomus var. atomus",
+    "Cyclotella atomus var. gracilis",
+    "Cyclotella meduanae",
+    "Cyclotella meneghiniana",
+    "Discostella pseudostelligera",
+    "Discostella stelligera",
+    "Pantocsekiella delicatula",
+    "Pantocsekiella ocellata",
+    "Stephanodiscus hantzschii f. hantzschii",
+    "Stephanodiscus hantzschii f. tenuis",
+    "Stephanodiscus minutulus",
+    "Thalassiosira pseudonana"
+  ],
+  "rare_species": [
+    "Aulacoseira ambigua",
+    "Aulacoseira subarctica",
+    "Conticribra weissflogii",
+    "Cyclotella scaldensis",
+    "Discostella stelligeroides",
+    "Lindavia radiosa",
+    "Lindavia praetermissa",
+    "Melosira varians",
+    "Pantocsekiella costei",
+    "Pantocsekiella comensis",
+    "Stephanodiscus alpinus",
+    "Stephanodiscus neoastraea",
+    "Stephanodiscus triporus",
+    "Stephanodiscus roundii"
+  ]
+}
