@@ -13,6 +13,7 @@ class App(tk.Frame):
         super().__init__()
         self.parent = parent
         self.species_file = 'species.json'
+        self.working_directory = None
         self.file_names = []
         self.canvas = None
         self.canvas_image = None
@@ -75,6 +76,16 @@ class App(tk.Frame):
         self.rare_species_options.grid(row=3, column=1, sticky=tk.NW, pady=5)
         self.create_buttons(self.species_common)
 
+        # Events
+        self.parent.bind('<space>', self.display_next_image)
+        self.parent.bind('a', lambda e: self.save_data('Cyclotella atomus var. atomus'))
+        self.parent.bind('d', lambda e: self.save_data('Discostella pseudostelligera'))
+        self.parent.bind('e', lambda e: self.save_data('Cyclotella meduanae'))
+        self.parent.bind('h', lambda e: self.save_data('Stephanodiscus hantzschii f. hantzschii'))
+        self.parent.bind('i', lambda e: self.save_data('Cyclostephanos invisitatus'))
+        self.parent.bind('m', lambda e: self.save_data('Stephanodiscus minutulus'))
+        self.parent.bind('t', lambda e: self.save_data('Stephanodiscus hantzschii f. tenuis'))
+
     def on_open(self):
         self.counter = 0
         directory = pathlib.Path(filedialog.askdirectory())
@@ -82,7 +93,7 @@ class App(tk.Frame):
             directory / filename for filename in os.listdir(directory) if filename.endswith('.tif')]
         self.display_next_image()
 
-    def display_next_image(self):
+    def display_next_image(self, event=None):
         if len(self.file_names) == self.counter:
             self.pack_files()
             self.clear()
@@ -102,11 +113,11 @@ class App(tk.Frame):
 
     def clear(self):
         self.counter = 0
-        self.current_image_name.set('')
-        self.data.clear()
         self.canvas.delete(self.canvas_image)
         self.canvas.create_text(self.canvas.winfo_width() / 2, self.canvas.winfo_height() / 2, anchor=tk.CENTER,
                                 text="End", fill="red", font=("Courier", 44))
+        self.current_image_name.set('')
+        self.data.clear()
 
     def read_species(self):
         if os.path.exists(self.species_file):
@@ -121,7 +132,7 @@ class App(tk.Frame):
             btn.config(command=lambda lab=label: self.save_data(lab))
             btn.grid(row=idx + self.grid_top_widgets, column=1, sticky=tk.EW, pady=2)
 
-    def save_data(self, label):
+    def save_data(self, label, event=False):
         self.data[self.file_names[self.counter - 1].stem] = label
         self.display_next_image()
 
@@ -144,13 +155,14 @@ class App(tk.Frame):
             json.dump(data, f, indent=2)
 
     def pack_files(self):
-        directory = self.file_names[0].parent
+        self.working_directory = self.file_names[0].parent
         for file, taxon in self.data.items():
-            new_folder = directory / taxon
+            new_folder = self.working_directory / taxon
             if not os.path.isdir(new_folder):
                 os.mkdir(new_folder)
-            new_file = (directory / file).with_suffix('.tif')
+            new_file = (self.working_directory / file).with_suffix('.tif')
             os.rename(new_file, (new_folder / file).with_suffix('.tif'))
+        self.clear()
 
 
 def main():
