@@ -6,6 +6,7 @@ import cv2
 import PIL.Image
 import PIL.ImageTk
 import json
+from ctypes import windll
 
 
 class App(tk.Frame):
@@ -40,7 +41,8 @@ class App(tk.Frame):
         menubar.add_command(label="Open", command=self.on_open)
         self.parent.config(menu=menubar)
 
-        label_image_name = tk.Label(self.parent, textvariable=self.current_image_name)
+        label_image_name = tk.Label(
+            self.parent, textvariable=self.current_image_name)
         label_image_name.grid(row=0, column=1, sticky=tk.N, pady=1)
 
         btn_question = tk.Button(
@@ -58,12 +60,15 @@ class App(tk.Frame):
         self.read_species()
 
         self.canvas = tk.Canvas(self.parent, bg="grey")
-        self.canvas.grid(row=0, column=0, rowspan=len(self.species_common) + self.grid_top_widgets, sticky=tk.NSEW)
+        self.canvas.grid(row=0, column=0, rowspan=len(
+            self.species_common) + self.grid_top_widgets, sticky=tk.NSEW)
 
-        entry_new_species = tk.Entry(self.parent, textvariable=self.new_species_name, width=30)
+        entry_new_species = tk.Entry(
+            self.parent, textvariable=self.new_species_name, width=30)
         entry_new_species.grid(row=2, column=1, sticky=tk.NW, pady=5)
 
-        btn_save_entry = tk.Button(self.parent, text="Save", width=10, command=self.save_new_species)
+        btn_save_entry = tk.Button(
+            self.parent, text="Save", width=10, command=self.save_new_species)
         btn_save_entry.grid(row=2, column=1, padx=60, pady=5, sticky=tk.E)
 
         self.choosed_species.set('Select other')
@@ -93,9 +98,11 @@ class App(tk.Frame):
         # height, width, no_channels = cv_img.shape
         resized_image = cv2.resize(cv_img, (0, 0), fx=0.9, fy=0.9)
 
-        self.photo = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(resized_image))
+        self.photo = PIL.ImageTk.PhotoImage(
+            image=PIL.Image.fromarray(resized_image))
         if self.counter == 0:
-            self.canvas_image = self.canvas.create_image(0, 0, image=self.photo, anchor=tk.NW)
+            self.canvas_image = self.canvas.create_image(
+                0, 0, image=self.photo, anchor=tk.NW)
         self.canvas.itemconfig(self.canvas_image, image=self.photo)
         self.current_image_name.set(self.file_names[self.counter].stem)
         self.counter += 1
@@ -119,7 +126,8 @@ class App(tk.Frame):
         for idx, label in enumerate(species):
             btn = tk.Button(self.parent, text=label)
             btn.config(command=lambda lab=label: self.save_data(lab))
-            btn.grid(row=idx + self.grid_top_widgets, column=1, sticky=tk.EW, pady=2)
+            btn.grid(row=idx + self.grid_top_widgets,
+                     column=1, sticky=tk.EW, pady=2)
 
     def save_data(self, label):
         self.data[self.file_names[self.counter - 1].stem] = label
@@ -134,7 +142,8 @@ class App(tk.Frame):
         menu = self.rare_species_options["menu"]
         menu.delete(0, "end")
         for species in self.species_rare:
-            menu.add_command(label=species, command=lambda lab=self.choosed_species: self.save_data(lab))
+            menu.add_command(
+                label=species, command=lambda lab=self.choosed_species: self.save_data(lab))
 
         with open(self.species_file, 'r+') as f:
             data = json.load(f)
@@ -154,6 +163,7 @@ class App(tk.Frame):
 
 
 def main():
+    windll.shcore.SetProcessDpiAwareness(1)
     root = tk.Tk()
     root.state('zoomed')
     app = App(root)
