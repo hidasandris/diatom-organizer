@@ -2,7 +2,6 @@ import os
 import tkinter as tk
 from tkinter import filedialog
 import pathlib
-import cv2
 import PIL.Image
 import PIL.ImageTk
 import json
@@ -83,13 +82,19 @@ class App(tk.Frame):
 
         # Events
         self.parent.bind('<space>', self.display_next_image)
-        self.parent.bind('a', lambda e: self.save_data('Cyclotella atomus var. atomus'))
-        self.parent.bind('d', lambda e: self.save_data('Discostella pseudostelligera'))
+        self.parent.bind('a', lambda e: self.save_data(
+            'Cyclotella atomus var. atomus'))
+        self.parent.bind('d', lambda e: self.save_data(
+            'Discostella pseudostelligera'))
         self.parent.bind('e', lambda e: self.save_data('Cyclotella meduanae'))
-        self.parent.bind('h', lambda e: self.save_data('Stephanodiscus hantzschii f. hantzschii'))
-        self.parent.bind('i', lambda e: self.save_data('Cyclostephanos invisitatus'))
-        self.parent.bind('m', lambda e: self.save_data('Stephanodiscus minutulus'))
-        self.parent.bind('t', lambda e: self.save_data('Stephanodiscus hantzschii f. tenuis'))
+        self.parent.bind('h', lambda e: self.save_data(
+            'Stephanodiscus hantzschii f. hantzschii'))
+        self.parent.bind('i', lambda e: self.save_data(
+            'Cyclostephanos invisitatus'))
+        self.parent.bind('m', lambda e: self.save_data(
+            'Stephanodiscus minutulus'))
+        self.parent.bind('t', lambda e: self.save_data(
+            'Stephanodiscus hantzschii f. tenuis'))
 
     def on_open(self):
         self.counter = 0
@@ -104,13 +109,10 @@ class App(tk.Frame):
             self.clear()
             return
         file_name = self.file_names[self.counter]
-        img = cv2.imread(file_name.as_posix(), 0)
-        cv_img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
-        # height, width, no_channels = cv_img.shape
-        resized_image = cv2.resize(cv_img, (0, 0), fx=0.9, fy=0.9)
+        file_name_str = file_name.as_posix()
+        img = PIL.Image.open(file_name_str)
 
-        self.photo = PIL.ImageTk.PhotoImage(
-            image=PIL.Image.fromarray(resized_image))
+        self.photo = PIL.ImageTk.PhotoImage(img)
         if self.counter == 0:
             self.canvas_image = self.canvas.create_image(
                 0, 0, image=self.photo, anchor=tk.NW)
