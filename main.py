@@ -6,6 +6,7 @@ import PIL.Image
 import PIL.ImageTk
 import json
 from ctypes import windll
+import copy
 
 
 class App(tk.Frame):
@@ -150,7 +151,7 @@ class App(tk.Frame):
             size = (event.width, event.height)
         else:
             size = (width, height)
-        resized = self.img
+        resized = copy.copy(self.img)
         resized.thumbnail(size, PIL.Image.ANTIALIAS)
         self.photo = PIL.ImageTk.PhotoImage(resized)
         self.canvas.itemconfig(self.canvas_image, image=self.photo)
