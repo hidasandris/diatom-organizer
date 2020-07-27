@@ -35,10 +35,11 @@ class App(tk.Frame):
         self.parent.rowconfigure(0, weight=1)
         self.parent.columnconfigure(0, weight=5)
         self.parent.columnconfigure(1, weight=1)
-        self.parent.title("File dialog")
+        self.parent.title("Diatom organizer")
 
         menubar = tk.Menu(self.parent)
         menubar.add_command(label="Open", command=self.on_open)
+        menubar.add_command(label="Import", command=self.on_import)
         self.parent.config(menu=menubar)
 
         label_image_name = tk.Label(
@@ -81,6 +82,7 @@ class App(tk.Frame):
         self.create_buttons(self.species_common)
 
         # Events
+        self.canvas.bind("<Configure>", self.resize)
         self.parent.bind('<space>', self.display_next_image)
         self.parent.bind('a', lambda e: self.save_data(
             'Cyclotella atomus var. atomus'))
@@ -102,24 +104,56 @@ class App(tk.Frame):
         self.file_names = [
             directory / filename for filename in os.listdir(directory)
             if filename.endswith('.tif') or filename.endswith('.bmp')]
+        self.working_directory = self.file_names[0].parent
         self.display_next_image()
+
+    def on_import(self):
+        import_file = pathlib.Path(
+            filedialog.askopenfilename(
+                filetypes=(('JSON', '*.json'),)))
+        with open(import_file) as json_file:
+            self.data = json.load(json_file)
+        self.working_directory = import_file.parent
+
+        self.pack_files()
 
     def display_next_image(self, event=None):
         if len(self.file_names) == self.counter:
-            self.pack_files()
+            try:
+                self.pack_files()
+            except:
+                with open(self.working_directory / 'result.json', 'w') as fp:
+                    json.dump(self.data, fp)
             self.clear()
             return
         file_name = self.file_names[self.counter]
         file_name_str = file_name.as_posix()
-        img = PIL.Image.open(file_name_str)
+        self.img = PIL.Image.open(file_name_str)
+        size = self.img.size
 
-        self.photo = PIL.ImageTk.PhotoImage(img)
+        self.photo = PIL.ImageTk.PhotoImage(self.img)
         if self.counter == 0:
             self.canvas_image = self.canvas.create_image(
-                0, 0, image=self.photo, anchor=tk.NW)
+                0, 0, image=self.photo, anchor=tk.NW, tags="IMG")
         self.canvas.itemconfig(self.canvas_image, image=self.photo)
         self.current_image_name.set(self.file_names[self.counter].stem)
         self.counter += 1
+
+        canvas_width = self.canvas.winfo_width()
+        canvas_height = self.canvas.winfo_height()
+        self.resize(width=canvas_width, height=canvas_height)
+
+    def resize(self, event=None, width=None, height=None):
+        if not hasattr(self, 'img'):
+            return
+        if event:
+            size = (event.width, event.height)
+        else:
+            size = (width, height)
+        resized = self.img
+        resized.thumbnail(size, PIL.Image.ANTIALIAS)
+        self.photo = PIL.ImageTk.PhotoImage(resized)
+        self.canvas.itemconfig(self.canvas_image, image=self.photo)
 
     def clear(self):
         self.counter = 0
@@ -167,15 +201,15 @@ class App(tk.Frame):
             json.dump(data, f, indent=2)
 
     def pack_files(self):
-        self.working_directory = self.file_names[0].parent
-        extension = self.file_names[0].suffix
+        extension = self.file_names[0].suffix if len(
+            self.file_names) else '.tif'
         for file, taxon in self.data.items():
             new_folder = self.working_directory / taxon
             if not os.path.isdir(new_folder):
                 os.mkdir(new_folder)
 
-            new_file = (self.working_directory / file).with_suffix(extension)
-            os.rename(new_file, (new_folder / file).with_suffix(extension))
+            new_file = (self.working_directory / (file + extension))
+            os.rename(new_file, (new_folder / (file + extension)))
         self.clear()
 
 
