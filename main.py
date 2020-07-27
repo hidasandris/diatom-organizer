@@ -100,7 +100,8 @@ class App(tk.Frame):
         self.counter = 0
         directory = pathlib.Path(filedialog.askdirectory())
         self.file_names = [
-            directory / filename for filename in os.listdir(directory) if filename.endswith('.tif')]
+            directory / filename for filename in os.listdir(directory)
+            if filename.endswith('.tif') or filename.endswith('.bmp')]
         self.display_next_image()
 
     def display_next_image(self, event=None):
@@ -167,12 +168,14 @@ class App(tk.Frame):
 
     def pack_files(self):
         self.working_directory = self.file_names[0].parent
+        extension = self.file_names[0].suffix
         for file, taxon in self.data.items():
             new_folder = self.working_directory / taxon
             if not os.path.isdir(new_folder):
                 os.mkdir(new_folder)
-            new_file = (self.working_directory / file).with_suffix('.tif')
-            os.rename(new_file, (new_folder / file).with_suffix('.tif'))
+
+            new_file = (self.working_directory / file).with_suffix(extension)
+            os.rename(new_file, (new_folder / file).with_suffix(extension))
         self.clear()
 
 
