@@ -14,6 +14,8 @@ class App(tk.Frame):
         super().__init__()
         self.parent = parent
         self.species_file = 'species.json'
+        self.hotkeys_file = 'hotkeys.json'
+        self.hotkeys = {}
         self.working_directory = None
         self.file_names = []
         self.canvas = None
@@ -84,22 +86,29 @@ class App(tk.Frame):
 
         # Events
         self.canvas.bind("<Configure>", self.resize)
+        self.parent.bind('<Control-o>', self.on_open)
         self.parent.bind('<space>', self.display_next_image)
-        self.parent.bind('a', lambda e: self.save_data(
-            'Cyclotella atomus var. atomus'))
-        self.parent.bind('d', lambda e: self.save_data(
-            'Discostella pseudostelligera'))
-        self.parent.bind('e', lambda e: self.save_data('Cyclotella meduanae'))
-        self.parent.bind('h', lambda e: self.save_data(
-            'Stephanodiscus hantzschii f. hantzschii'))
-        self.parent.bind('i', lambda e: self.save_data(
-            'Cyclostephanos invisitatus'))
-        self.parent.bind('m', lambda e: self.save_data(
-            'Stephanodiscus minutulus'))
-        self.parent.bind('t', lambda e: self.save_data(
-            'Stephanodiscus hantzschii f. tenuis'))
+        entry_new_species.bind('<FocusIn>', self.unbind_hotkeys)
+        entry_new_species.bind('<FocusOut>', self.bind_hotkeys)
+        self.import_hotkeys()
+        self.bind_hotkeys()
 
-    def on_open(self):
+    def import_hotkeys(self):
+        if os.path.exists(self.hotkeys_file):
+            with open(self.hotkeys_file, 'r') as f:
+                self.hotkeys = json.load(f)
+
+    def bind_hotkeys(self, event=None):
+        for hotkey, species in self.hotkeys.items():
+            def make_lambda(x):
+                return lambda e: self.save_data(x)
+            self.parent.bind(hotkey, make_lambda(species))
+
+    def unbind_hotkeys(self, event=None):
+        for hotkey in self.hotkeys.keys():
+            self.parent.unbind(hotkey)
+
+    def on_open(self, event=None):
         self.counter = 0
         directory = pathlib.Path(filedialog.askdirectory())
         self.file_names = [
@@ -192,7 +201,7 @@ class App(tk.Frame):
         menu.delete(0, "end")
         for species in self.species_rare:
             menu.add_command(
-                label=species, command=lambda lab=self.choosed_species: self.save_data(lab))
+                label=species, command=tk._setit(self.choosed_species, species, self.save_data))
 
         with open(self.species_file, 'r+') as f:
             data = json.load(f)
@@ -201,16 +210,22 @@ class App(tk.Frame):
             f.seek(0)
             json.dump(data, f, indent=2)
 
-    def pack_files(self):
-        extension = self.file_names[0].suffix if len(
-            self.file_names) else '.tif'
-        for file, taxon in self.data.items():
-            new_folder = self.working_directory / taxon
-            if not os.path.isdir(new_folder):
-                os.mkdir(new_folder)
+        self.canvas.focus_set()
 
-            new_file = (self.working_directory / (file + extension))
-            os.rename(new_file, (new_folder / (file + extension)))
+    def pack_files(self):
+        try:
+            extension = self.file_names[0].suffix if len(
+                self.file_names) else '.tif'
+            for file, taxon in self.data.items():
+                new_folder = self.working_directory / taxon
+                if not os.path.isdir(new_folder):
+                    os.mkdir(new_folder)
+
+                new_file = (self.working_directory / (file + extension))
+                os.rename(new_file, (new_folder / (file + extension)))
+        except:
+            with open(self.working_directory / 'result.json', 'w') as fp:
+                json.dump(self.data, fp)
         self.clear()
 
 
