@@ -1,6 +1,7 @@
 import os
 import tkinter as tk
 from tkinter import filedialog
+from tkinter import messagebox
 import pathlib
 import PIL.Image
 import PIL.ImageTk
@@ -43,6 +44,7 @@ class App(tk.Frame):
         menubar = tk.Menu(self.parent)
         menubar.add_command(label="Open", command=self.on_open)
         menubar.add_command(label="Import", command=self.on_import)
+        menubar.add_command(label="Hotkeys", command=self.on_show_hotkeys)
         self.parent.config(menu=menubar)
 
         label_image_name = tk.Label(
@@ -126,6 +128,12 @@ class App(tk.Frame):
         self.working_directory = import_file.parent
 
         self.pack_files()
+
+    def on_show_hotkeys(self):
+        hotkeys_str = ''
+        for key, value in self.hotkeys.items():
+            hotkeys_str += '{0}: {1}\r\n'.format(key, value)
+        messagebox.showinfo('Hotkeys', hotkeys_str)
 
     def display_next_image(self, event=None):
         if len(self.file_names) == self.counter:
