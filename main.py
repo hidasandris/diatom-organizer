@@ -231,7 +231,8 @@ class App(tk.Frame):
 
                 new_file = (self.working_directory / (file + extension))
                 os.rename(new_file, (new_folder / (file + extension)))
-        except:
+        except Exception as e:
+            print(e)
             with open(self.working_directory / 'result.json', 'w') as fp:
                 json.dump(self.data, fp)
         self.clear()
