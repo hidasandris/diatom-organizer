@@ -89,7 +89,6 @@ class App(tk.Frame):
         # Events
         self.canvas.bind("<Configure>", self.resize)
         self.parent.bind('<Control-o>', self.on_open)
-        self.parent.bind('<space>', self.display_next_image)
         entry_new_species.bind('<FocusIn>', self.unbind_hotkeys)
         entry_new_species.bind('<FocusOut>', self.bind_hotkeys)
         self.import_hotkeys()
@@ -101,12 +100,14 @@ class App(tk.Frame):
                 self.hotkeys = json.load(f)
 
     def bind_hotkeys(self, event=None):
+        self.parent.bind('<space>', self.display_next_image)
         for hotkey, species in self.hotkeys.items():
             def make_lambda(x):
                 return lambda e: self.save_data(x)
             self.parent.bind(hotkey, make_lambda(species))
 
     def unbind_hotkeys(self, event=None):
+        self.parent.unbind('<space>')
         for hotkey in self.hotkeys.keys():
             self.parent.unbind(hotkey)
 
@@ -222,14 +223,18 @@ class App(tk.Frame):
 
     def pack_files(self):
         try:
-            extension = self.file_names[0].suffix if len(
-                self.file_names) else '.tif'
             for file, taxon in self.data.items():
                 new_folder = self.working_directory / taxon
                 if not os.path.isdir(new_folder):
                     os.mkdir(new_folder)
 
+                extension = '.tif'
                 new_file = (self.working_directory / (file + extension))
+                if not new_file.is_file():
+                    extension = '.bmp'
+                    new_file = (self.working_directory / (file + extension))
+                if not new_file.is_file():
+                    continue
                 os.rename(new_file, (new_folder / (file + extension)))
         except Exception as e:
             print(e)
