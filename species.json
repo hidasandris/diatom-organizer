@@ -12,9 +12,11 @@
     "Discostella stelligera",
     "Pantocsekiella delicatula",
     "Pantocsekiella ocellata",
+    "Skeletonema potamos",
     "Stephanodiscus hantzschii f. hantzschii",
     "Stephanodiscus hantzschii f. tenuis",
     "Stephanodiscus minutulus",
+    "Stephanodiscus neoastraea",
     "Thalassiosira pseudonana"
   ],
   "rare_species": [
@@ -25,6 +27,7 @@
     "Conticribra weissflogii",
     "Cyclotella scaldensis",
     "Discostella stelligeroides",
+    "Lindavia balatonis",
     "Lindavia comta",
     "Lindavia praetermissa",
     "Lindavia radiosa",
@@ -32,9 +35,7 @@
     "Pantocsekiella comensis",
     "Pantocsekiella costei",
     "Pantocsekiella sp.",
-    "Skeletonema potamos",
     "Stephanodiscus alpinus",
-    "Stephanodiscus neoastraea",
     "Stephanodiscus roundii",
     "Stephanodiscus triporus"
   ]

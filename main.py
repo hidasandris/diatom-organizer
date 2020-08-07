@@ -147,7 +147,8 @@ class App(tk.Frame):
             return
         file_name = self.file_names[self.counter]
         file_name_str = file_name.as_posix()
-        self.img = PIL.Image.open(file_name_str)
+        with PIL.Image.open(file_name_str) as img:
+            self.img = copy.copy(img)
         size = self.img.size
 
         self.photo = PIL.ImageTk.PhotoImage(self.img)

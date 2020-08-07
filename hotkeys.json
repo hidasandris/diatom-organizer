@@ -1,10 +1,12 @@
 {
-  ".": "_Bizonytalan",
+  ",": "_Bizonytalan",
+  "0": "manual",
   "a": "Cyclotella atomus var. atomus",
   "d": "Discostella pseudostelligera",
   "e": "Cyclotella meduanae",
   "h": "Stephanodiscus hantzschii f. hantzschii",
   "i": "Cyclostephanos invisitatus",
   "m": "Stephanodiscus minutulus",
-  "t": "Stephanodiscus hantzschii f. tenuis"
+  "t": "Stephanodiscus hantzschii f. tenuis",
+  "u": "Cyclostephanos dubius"
 }
